@@ -13,7 +13,7 @@ def main():
     meta_files_to_check = ['PKG-INFO', 'METADATA']
 
     for installed_distribution in get_installed_distributions():
-        found_license = False
+        license = 'UNKNOWN'
         for metafile in meta_files_to_check:
             if not installed_distribution.has_metadata(metafile):
                 continue
@@ -22,14 +22,12 @@ def main():
                     (k, v) = line.split(': ', 1)
                     if v == 'UNKNOWN':
                         continue
-                    sys.stdout.write("{project_name}: {license}\n".format(
-                        project_name=installed_distribution.project_name,
-                        license=v))
-                    found_license = True
+                    license = v
                     break
-        if not found_license:
-            sys.stdout.write("{project_name}: Found no license information.\n".format(
-                project_name=installed_distribution.project_name))
+        project_name = installed_distribution.project_name
+        version = installed_distribution.version
+        home = '/'.join(['https://pypi.python.org/pypi', project_name, version])
+        sys.stdout.write('"{}","{}","{}","{}"\n'.format(project_name, version, license, home))
 
 if __name__ == "__main__":
     main()
